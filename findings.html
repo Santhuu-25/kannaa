@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+
+{% block title %}Vulnerability Findings Catalog{% endblock %}
+
+{% block content %}
+<div class="hero-banner">
+  <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+    <div>
+      <h1 class="hero-title">
+        <span>🐛 Security Audit Findings Catalog</span>
+        <span class="severity-pill low">{{ metrics.total_findings or 0 }} Total Issues Found</span>
+      </h1>
+      <p class="hero-subtitle">
+        Potential vulnerabilities and security weaknesses detected by static AST rule engine and Bandit AST analysis.
+      </p>
+    </div>
+    <div style="display: flex; gap: 0.5rem;">
+      <a href="{{ url_for('code_review') }}" class="btn btn-secondary">🔍 New Scan</a>
+      <a href="{{ url_for('reports') }}" class="btn btn-primary">📋 Generate Report</a>
+    </div>
+  </div>
+</div>
+
+<!-- Metrics Bar -->
+<div class="metrics-grid">
+  <div class="metric-card" style="border-left: 4px solid #8b5cf6;">
+    <div class="metric-value" style="color: #a78bfa;">{{ metrics.critical_count or 0 }}</div>
+    <div class="metric-label">CRITICAL SEVERITY</div>
+  </div>
+  <div class="metric-card high">
+    <div class="metric-value" style="color: #f87171;">{{ metrics.high_count or 0 }}</div>
+    <div class="metric-label">HIGH SEVERITY</div>
+  </div>
+  <div class="metric-card medium">
+    <div class="metric-value" style="color: #fbbf24;">{{ metrics.medium_count or 0 }}</div>
+    <div class="metric-label">MEDIUM SEVERITY</div>
+  </div>
+  <div class="metric-card low">
+    <div class="metric-value" style="color: #38bdf8;">{{ metrics.low_count or 0 }}</div>
+    <div class="metric-label">LOW SEVERITY</div>
+  </div>
+  <div class="metric-card success">
+    <div class="metric-value" style="color: #34d399;">{{ metrics.info_count or 0 }}</div>
+    <div class="metric-label">INFO / PASS</div>
+  </div>
+</div>
+
+<!-- Interactive Filter Bar -->
+<div class="filter-bar">
+  <button class="filter-btn active" data-filter="all">All Findings ({{ findings|length }})</button>
+  <button class="filter-btn" data-filter="CRITICAL">Critical ({{ metrics.critical_count or 0 }})</button>
+  <button class="filter-btn" data-filter="HIGH">High ({{ metrics.high_count or 0 }})</button>
+  <button class="filter-btn" data-filter="MEDIUM">Medium ({{ metrics.medium_count or 0 }})</button>
+  <button class="filter-btn" data-filter="LOW">Low ({{ metrics.low_count or 0 }})</button>
+  <button class="filter-btn" data-filter="INFO">Info ({{ metrics.info_count or 0 }})</button>
+</div>
+
+{% if not findings %}
+  <div class="card" style="text-align: center; padding: 3rem;">
+    <div style="font-size: 3rem; margin-bottom: 1rem;">🎉</div>
+    <h2>No Security Findings Reported!</h2>
+    <p style="color: var(--text-muted); max-width: 600px; margin: 0.5rem auto 1.5rem;">
+      The submitted code produced zero static rule matches. Run a new scan or test an intentionally vulnerable educational sample.
+    </p>
+    <a href="{{ url_for('code_review') }}" class="btn btn-primary">Submit Code for Review</a>
+  </div>
+{% else %}
+  <div class="findings-list">
+    {% for f in findings %}
+      <div class="card finding-card" data-severity="{{ f.severity }}">
+        <div class="card-title">
+          <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
+            <span class="severity-pill {{ f.severity.lower() }}">{{ f.severity }}</span>
+            <strong style="font-size: 1.1rem; color: var(--text-bright);">[{{ f.finding_id }}] {{ f.category }}</strong>
+          </div>
+          <div style="font-size: 0.85rem; color: var(--text-muted);">
+            Line {{ f.line_number }} | Confidence: <strong>{{ f.confidence }}</strong> | {{ f.cwe }}
+          </div>
+        </div>
+
+        <div style="margin-bottom: 0.75rem; font-size: 0.85rem; color: var(--text-muted);">
+          ⚠️ <em>Potential vulnerability / security issue detected by static analysis.</em>
+        </div>
+
+        <p style="color: var(--text-main); margin-bottom: 1rem;">
+          <strong>Explanation:</strong> {{ f.explanation }}
+        </p>
+
+        <!-- Code Snippet -->
+        <div style="margin-bottom: 1rem;">
+          <div style="font-size: 0.85rem; font-weight: 700; color: #f87171; margin-bottom: 0.3rem;">
+            ❌ Vulnerable Source Code Snippet (Line {{ f.line_number }}):
+          </div>
+          <div class="code-box vulnerable-snippet">
+            <code>{{ f.code_snippet }}</code>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin-bottom: 1rem;">
+          <div>
+            <strong style="color: var(--text-bright); font-size: 0.9rem;">💥 Security Impact:</strong>
+            <p style="font-size: 0.88rem; color: var(--text-muted); margin-top: 0.25rem;">{{ f.security_impact }}</p>
+          </div>
+          <div>
+            <strong style="color: var(--text-bright); font-size: 0.9rem;">💡 Recommended Remediation:</strong>
+            <p style="font-size: 0.88rem; color: var(--text-muted); margin-top: 0.25rem;">{{ f.remediation }}</p>
+          </div>
+        </div>
+
+        <!-- Verification Guidance -->
+        <div style="background: var(--bg-card-hover); padding: 0.85rem 1rem; border-radius: 8px; border: 1px solid var(--border-color); margin-top: 1rem;">
+          <strong style="color: var(--primary-cyan); font-size: 0.88rem;">🔍 Verification Step:</strong>
+          <span style="font-size: 0.88rem; color: var(--text-main); margin-left: 0.4rem;">{{ f.verification }}</span>
+        </div>
+
+        {% if f.secure_example %}
+          <div style="margin-top: 1rem;">
+            <div style="font-size: 0.85rem; font-weight: 700; color: #34d399; margin-bottom: 0.3rem;">
+              ✓ Remediation Code Example:
+            </div>
+            <div class="code-box secure-snippet">
+              <code>{{ f.secure_example }}</code>
+            </div>
+          </div>
+        {% endif %}
+      </div>
+    {% endfor %}
+  </div>
+{% endif %}
+
+<!-- Bandit Findings Section if available -->
+{% if bandit and bandit.results %}
+  <div class="card" style="margin-top: 2rem;">
+    <div class="card-title">
+      <span>🤖 Bandit AST External Findings ({{ bandit.count }})</span>
+      <span class="severity-pill low">Bandit Active</span>
+    </div>
+    {% for item in bandit.results %}
+      <div style="border-bottom: 1px solid var(--border-color); padding: 1rem 0;">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 0.4rem;">
+          <strong style="color: var(--text-bright);">{{ item.test_name }} ({{ item.test_id }})</strong>
+          <span class="severity-pill {{ item.issue_severity.lower() }}">{{ item.issue_severity }} SEVERITY</span>
+        </div>
+        <p style="font-size: 0.88rem; color: var(--text-main); margin-bottom: 0.5rem;">
+          Line {{ item.line_number }}: {{ item.issue_text }}
+        </p>
+        <div class="code-box vulnerable-snippet">
+          <code>{{ item.code }}</code>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+{% endif %}
+
+{% endblock %}

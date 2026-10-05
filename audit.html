@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Security Audit - SecureVault Cybersecurity Audit</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="brand">
+      <div class="brand-icon">🛡️</div>
+      <span>SecureVault</span>
+      <span class="mode-badge {{ app_mode.lower() }}">
+        <span class="pulse-dot"></span>
+        {{ app_mode }} MODE (PORT {{ app_port }})
+      </span>
+    </div>
+    <ul class="nav-links">
+      <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+      <li><a href="{{ url_for('audit') }}" class="active">Security Audit</a></li>
+      <li><a href="{{ url_for('findings') }}">Findings</a></li>
+      <li><a href="{{ url_for('recommendations') }}">Guidelines</a></li>
+      <li><a href="{{ url_for('about') }}">About</a></li>
+      <li>
+        <a href="http://127.0.0.1:{{ other_port }}" class="mode-switcher-btn">
+          ⚡ Switch to Port {{ other_port }} ({{ other_mode_label }})
+        </a>
+      </li>
+    </ul>
+  </nav>
+
+  <main class="main-container">
+    <div class="hero-banner">
+      <h1 class="hero-title">🔍 Comprehensive Security Audit Report</h1>
+      <p class="hero-subtitle">
+        CodeAlpha Cybersecurity Internship Task 3: Secure Coding Review & Audit of SecureVault Application.
+      </p>
+    </div>
+
+    <!-- Overview Metrics Grid -->
+    <div class="metrics-grid">
+      <div class="metric-card high">
+        <div class="metric-value">6</div>
+        <div class="metric-label">Total Vulnerabilities Identified</div>
+      </div>
+      <div class="metric-card high">
+        <div class="metric-value">3</div>
+        <div class="metric-label">High Severity Findings</div>
+      </div>
+      <div class="metric-card medium">
+        <div class="metric-value">2</div>
+        <div class="metric-label">Medium Severity Findings</div>
+      </div>
+      <div class="metric-card low">
+        <div class="metric-value">1</div>
+        <div class="metric-label">Low Severity Findings</div>
+      </div>
+      <div class="metric-card success">
+        <div class="metric-value">100%</div>
+        <div class="metric-label">Remediation Status</div>
+      </div>
+    </div>
+
+    <!-- Executive Summary Card -->
+    <div class="card">
+      <div class="card-title">
+        <span>📋 Executive Summary</span>
+        <span class="severity-pill low">Audit Status: Complete & Remediated</span>
+      </div>
+      <p style="color: var(--text-main); margin-bottom: 1rem;">
+        During the security evaluation of <code>vulnerable_app.py</code>, both manual static code inspection and automated static security analysis (using <strong>Bandit v1.9.4</strong>) were performed.
+      </p>
+      <p style="color: var(--text-muted);">
+        The audit uncovered severe architectural vulnerabilities including <strong>SQL Injection (CWE-89)</strong>, <strong>Hardcoded Secret Keys (CWE-798)</strong>, <strong>Weak Cryptographic Password Storage (CWE-327)</strong>, and <strong>Debug Mode in Production (CWE-215)</strong>. A complete remediated application <code>secure_app.py</code> was constructed to demonstrate full security compliance.
+      </p>
+    </div>
+
+    <!-- Audit Scope & Methodology Grid -->
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2rem;">
+      <div class="card">
+        <div class="card-title">
+          <span>🎯 Audit Scope</span>
+        </div>
+        <ul style="color: var(--text-muted); line-height: 1.8; padding-left: 1.25rem;">
+          <li><strong>Target Codebases:</strong> <code>vulnerable_app.py</code> vs <code>secure_app.py</code></li>
+          <li><strong>Authentication Flow:</strong> Password storage, hash algorithms, session security</li>
+          <li><strong>Database Tier:</strong> SQLite query construction and parameterization</li>
+          <li><strong>Input Handling:</strong> Sanitization, HTML escaping, and validation rules</li>
+          <li><strong>Configuration Security:</strong> Secrets management and environment variables</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <div class="card-title">
+          <span>🛠️ Audit Methodology</span>
+        </div>
+        <ol style="color: var(--text-muted); line-height: 1.8; padding-left: 1.25rem;">
+          <li><strong>Manual Code Inspection:</strong> Line-by-line review against OWASP Top 10 guidelines.</li>
+          <li><strong>Automated Static Analysis:</strong> Executed Bandit security AST scanner.</li>
+          <li><strong>Proof-of-Concept Testing:</strong> Verified SQLi bypass and XSS reflection.</li>
+          <li><strong>Remediation Implementation:</strong> Built secure architecture in <code>secure_app.py</code>.</li>
+          <li><strong>Re-testing Verification:</strong> Verified 0 high/medium issues in secure version.</li>
+        </ol>
+      </div>
+    </div>
+
+    <!-- Static Analysis & Quick Navigation Card -->
+    <div class="card">
+      <div class="card-title">
+        <span>🤖 Static Analysis Scanner (Bandit)</span>
+        <a href="{{ url_for('findings') }}" class="btn btn-primary" style="padding: 0.35rem 0.85rem; font-size: 0.85rem;">
+          View Full Vulnerability Findings Table →
+        </a>
+      </div>
+      <p style="color: var(--text-muted); margin-bottom: 1rem;">
+        Bandit analyzes Python AST code trees to detect security issues. Run the scan locally with:
+      </p>
+      <div class="code-box">
+        bandit -r . -f txt -o bandit_report.txt
+      </div>
+      <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0.75rem;">
+        The scan output report is generated into <code>bandit_report.txt</code> and documented in <code>SECURITY_AUDIT_REPORT.md</code>.
+      </p>
+    </div>
+  </main>
+
+  <footer class="footer">
+    CodeAlpha Task 3: Secure Coding Review & Audit | <strong>SecureVault Project</strong>
+  </footer>
+
+  <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

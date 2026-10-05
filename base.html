@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Secure Coding Review & Analysis Tool{% endblock %} - CodeAlpha Task 3</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="brand">
+      <div class="brand-icon">🛡️</div>
+      <div class="brand-text">
+        <span class="brand-name">CodeShield Review</span>
+        <span class="brand-sub">Task 3: Secure Coding Analysis</span>
+      </div>
+      <span class="mode-badge secure">
+        <span class="pulse-dot"></span>
+        STATIC ANALYSIS ACTIVE
+      </span>
+    </div>
+    
+    <ul class="nav-links">
+      <li><a href="{{ url_for('dashboard') }}" class="{{ 'active' if active_page == 'dashboard' else '' }}">📊 Dashboard</a></li>
+      <li><a href="{{ url_for('code_review') }}" class="{{ 'active' if active_page == 'review' else '' }}">🔍 Code Review</a></li>
+      <li><a href="{{ url_for('findings') }}" class="{{ 'active' if active_page == 'findings' else '' }}">🐛 Findings</a></li>
+      <li><a href="{{ url_for('comparison') }}" class="{{ 'active' if active_page == 'comparison' else '' }}">⚖️ Code Comparison</a></li>
+      <li><a href="{{ url_for('recommendations') }}" class="{{ 'active' if active_page == 'recommendations' else '' }}">💡 Guidelines</a></li>
+      <li><a href="{{ url_for('reports') }}" class="{{ 'active' if active_page == 'reports' else '' }}">📋 Reports</a></li>
+      <li><a href="{{ url_for('notes') }}" class="{{ 'active' if active_page == 'notes' else '' }}">📝 Secure Notes</a></li>
+      <li><a href="{{ url_for('about') }}" class="{{ 'active' if active_page == 'about' else '' }}">ℹ️ About</a></li>
+    </ul>
+
+    <div class="nav-actions">
+      <button id="theme-toggle-btn" class="theme-toggle-btn" title="Toggle Light/Dark Theme">
+        <span class="theme-icon">🌙</span> Dark Mode
+      </button>
+    </div>
+  </nav>
+
+  <main class="main-container">
+    <div class="flash-container">
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, message in messages %}
+            <div class="flash-msg {{ category }}">
+              <span>{{ message }}</span>
+              <button onclick="this.parentElement.remove()" style="background:none; border:none; color:inherit; cursor:pointer;">✕</button>
+            </div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+    </div>
+
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="footer">
+    <div>
+      <strong>CodeAlpha Cybersecurity Internship — Task 3: Secure Coding Review & Vulnerability Analysis Tool</strong>
+    </div>
+    <div style="font-size: 0.8rem; margin-top: 0.25rem; opacity: 0.8;">
+      Educational Static Code Security Analysis Suite | Powered by Python AST AST Rules & Bandit Integration
+    </div>
+  </footer>
+
+  <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+
+{% block title %}Code Review & Static Security Scanner{% endblock %}
+
+{% block content %}
+<div class="hero-banner">
+  <h1 class="hero-title">
+    <span>🔍 Python Source Code Security Scanner</span>
+  </h1>
+  <p class="hero-subtitle">
+    Submit Python source code via paste, file upload, or select controlled educational samples to perform automated AST static security analysis and Bandit security audit checks.
+  </p>
+</div>
+
+<div class="review-grid" style="display: grid; grid-template-columns: 1fr 340px; gap: 1.5rem;">
+  <!-- Left Main Column: Code Input / Editor -->
+  <div class="card">
+    <div class="card-title">
+      <span>📝 Python Source Code Input</span>
+      <span style="font-size: 0.85rem; font-weight: normal; color: var(--text-muted);">
+        Static Analysis Only — Code is NEVER executed
+      </span>
+    </div>
+
+    <!-- Sample Selector Bar -->
+    <div class="sample-bar" style="background: var(--bg-card-hover); padding: 0.75rem 1rem; border-radius: 8px; margin-bottom: 1.25rem; border: 1px solid var(--border-color);">
+      <label style="font-size: 0.85rem; font-weight: 700; color: var(--text-main); display: block; margin-bottom: 0.4rem;">
+        ⚡ Load Controlled Educational Sample Code:
+      </label>
+      <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+        <button type="button" class="btn btn-secondary btn-sm" onclick="loadSample('vulnerable_1')">
+          ⚠️ Vulnerable Sample (Multi-CWE)
+        </button>
+        <button type="button" class="btn btn-secondary btn-sm" onclick="loadSample('secure_1')">
+          ✓ Secure Remediated Sample
+        </button>
+        <button type="button" class="btn btn-secondary btn-sm" onclick="loadSample('vulnerable_app')">
+          📂 vulnerable_app.py
+        </button>
+        <button type="button" class="btn btn-secondary btn-sm" onclick="loadSample('secure_app')">
+          📂 secure_app.py
+        </button>
+      </div>
+    </div>
+
+    <form action="{{ url_for('analyze') }}" method="POST" enctype="multipart/form-data">
+      <!-- File Upload Input -->
+      <div class="form-group" style="margin-bottom: 1rem;">
+        <label class="form-label">Upload Python File (.py):</label>
+        <input type="file" name="code_file" accept=".py" class="form-control" style="padding: 0.5rem;">
+      </div>
+
+      <div style="text-align: center; margin: 0.75rem 0; color: var(--text-muted); font-size: 0.85rem; font-weight: 600;">
+        — OR PASTE CODE BELOW —
+      </div>
+
+      <!-- Code Textarea -->
+      <div class="form-group">
+        <label class="form-label">Python Source Code:</label>
+        <textarea name="source_code" id="source_code_input" class="form-control code-editor" rows="18" placeholder="# Paste Python source code here or choose an educational sample above..." required>{{ current_code or '' }}</textarea>
+      </div>
+
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1.25rem;">
+        <button type="button" class="btn btn-secondary" onclick="clearEditor()">
+          🗑️ Clear Editor
+        </button>
+        <button type="submit" class="btn btn-primary" style="padding: 0.85rem 2rem; font-size: 1rem;">
+          🚀 Run Static Security Review
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Right Sidebar: Scan Configuration & Information -->
+  <div>
+    <div class="card">
+      <div class="card-title">
+        <span>⚙️ Security Checks Active</span>
+      </div>
+      <ul class="checklist" style="list-style: none; padding: 0; line-height: 1.8; font-size: 0.88rem; color: var(--text-main);">
+        <li><span style="color: var(--success-emerald);">✓</span> Hard-coded Secrets (CWE-798)</li>
+        <li><span style="color: var(--success-emerald);">✓</span> Unsafe eval() / exec() (CWE-95)</li>
+        <li><span style="color: var(--success-emerald);">✓</span> Unsafe Subprocess / shell=True (CWE-78)</li>
+        <li><span style="color: var(--success-emerald);">✓</span> SQL Injection String Concat (CWE-89)</li>
+        <li><span style="color: var(--success-emerald);">✓</span> Flask Debug Mode Enabled (CWE-215)</li>
+        <li><span style="color: var(--success-emerald);">✓</span> Weak MD5 / SHA-1 Hashing (CWE-327)</li>
+        <li><span style="color: var(--success-emerald);">✓</span> Insecure Randomness (CWE-330)</li>
+        <li><span style="color: var(--success-emerald);">✓</span> Unsafe Path / Open Traversal (CWE-22)</li>
+        <li><span style="color: var(--success-emerald);">✓</span> Broad Exception Handling (CWE-396)</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <div class="card-title">
+        <span>🤖 Bandit Integration Status</span>
+      </div>
+      <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 0.75rem;">
+        <strong>Status:</strong>
+        <span class="severity-pill low">{{ bandit_status or 'Bandit AST Engine Ready' }}</span>
+      </p>
+      <p style="font-size: 0.85rem; color: var(--text-main);">
+        When code is analyzed, the scanner executes rule-based AST analysis and runs Bandit AST scanner if installed in the environment.
+      </p>
+    </div>
+
+    <div class="card">
+      <div class="card-title">
+        <span>🛡️ Safety Assurance</span>
+      </div>
+      <p style="font-size: 0.85rem; color: var(--text-muted);">
+        Submitted source code is parsed exclusively into Abstract Syntax Trees (AST) and token structures. It is <strong>never executed or evaluated</strong>.
+      </p>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function loadSample(sampleKey) {
+  fetch('/api/sample?key=' + sampleKey)
+    .then(res => res.json())
+    .then(data => {
+      if (data.code) {
+        document.getElementById('source_code_input').value = data.code;
+      }
+    })
+    .catch(err => console.error('Error loading sample:', err));
+}
+
+function clearEditor() {
+  document.getElementById('source_code_input').value = '';
+}
+</script>
+{% endblock %}

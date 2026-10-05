@@ -1,0 +1,159 @@
+Run started:2026-10-02 14:38:15.008120+00:00
+
+Test results:
+>> Issue: [B105:hardcoded_password_string] Possible hardcoded password: 'super_secret_hardcoded_key_12345_do_not_share'
+   Severity: Low   Confidence: Medium
+   CWE: CWE-259 (https://cwe.mitre.org/data/definitions/259.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.4/plugins/b105_hardcoded_password_string.html
+   Location: .\vulnerable_app.py:16:17
+15	# VULNERABILITY 1: Hardcoded Secret Key (CWE-798 / Bandit B105)
+16	app.secret_key = "super_secret_hardcoded_key_12345_do_not_share"
+17	
+
+--------------------------------------------------
+>> Issue: [B324:hashlib] Use of weak MD5 hash for security. Consider usedforsecurity=False
+   Severity: High   Confidence: High
+   CWE: CWE-327 (https://cwe.mitre.org/data/definitions/327.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.4/plugins/b324_hashlib.html
+   Location: .\vulnerable_app.py:56:19
+55	    # VULNERABILITY 2: Weak Cryptographic Hashing (MD5) (CWE-327 / Bandit B303, B324)
+56	    default_pass = hashlib.md5("admin123".encode()).hexdigest()
+57	    try:
+
+--------------------------------------------------
+>> Issue: [B608:hardcoded_sql_expressions] Possible SQL injection vector through string-based query construction.
+   Severity: Medium   Confidence: Medium
+   CWE: CWE-89 (https://cwe.mitre.org/data/definitions/89.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.4/plugins/b608_hardcoded_sql_expressions.html
+   Location: .\vulnerable_app.py:58:25
+57	    try:
+58	        cursor.execute(f"INSERT INTO users (username, password, email, role) VALUES ('admin', '{default_pass}', 'admin@securevault.local', 'admin')")
+59	        cursor.execute(f"INSERT INTO users (username, password, email, role) VALUES ('alice', '{hashlib.md5('password123'.encode()).hexdigest()}', 'alice@securevault.local', 'user')")
+
+--------------------------------------------------
+>> Issue: [B608:hardcoded_sql_expressions] Possible SQL injection vector through string-based query construction.
+   Severity: Medium   Confidence: Medium
+   CWE: CWE-89 (https://cwe.mitre.org/data/definitions/89.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.4/plugins/b608_hardcoded_sql_expressions.html
+   Location: .\vulnerable_app.py:59:25
+58	        cursor.execute(f"INSERT INTO users (username, password, email, role) VALUES ('admin', '{default_pass}', 'admin@securevault.local', 'admin')")
+59	        cursor.execute(f"INSERT INTO users (username, password, email, role) VALUES ('alice', '{hashlib.md5('password123'.encode()).hexdigest()}', 'alice@securevault.local', 'user')")
+60	        cursor.execute("INSERT INTO user_notes (username, title, content) VALUES ('admin', 'System Master Key Backup', 'Vault Master Passcode: SV-99482-SEC')")
+
+--------------------------------------------------
+>> Issue: [B324:hashlib] Use of weak MD5 hash for security. Consider usedforsecurity=False
+   Severity: High   Confidence: High
+   CWE: CWE-327 (https://cwe.mitre.org/data/definitions/327.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.4/plugins/b324_hashlib.html
+   Location: .\vulnerable_app.py:59:96
+58	        cursor.execute(f"INSERT INTO users (username, password, email, role) VALUES ('admin', '{default_pass}', 'admin@securevault.local', 'admin')")
+59	        cursor.execute(f"INSERT INTO users (username, password, email, role) VALUES ('alice', '{hashlib.md5('password123'.encode()).hexdigest()}', 'alice@securevault.local', 'user')")
+60	        cursor.execute("INSERT INTO user_notes (username, title, content) VALUES ('admin', 'System Master Key Backup', 'Vault Master Passcode: SV-99482-SEC')")
+
+--------------------------------------------------
+>> Issue: [B324:hashlib] Use of weak MD5 hash for security. Consider usedforsecurity=False
+   Severity: High   Confidence: High
+   CWE: CWE-327 (https://cwe.mitre.org/data/definitions/327.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.4/plugins/b324_hashlib.html
+   Location: .\vulnerable_app.py:95:26
+94	        # VULNERABILITY 2: Weak Password Digest Calculation (MD5 without Salt)
+95	        hashed_password = hashlib.md5(password.encode()).hexdigest()
+96	        
+
+--------------------------------------------------
+>> Issue: [B608:hardcoded_sql_expressions] Possible SQL injection vector through string-based query construction.
+   Severity: Medium   Confidence: Low
+   CWE: CWE-89 (https://cwe.mitre.org/data/definitions/89.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.4/plugins/b608_hardcoded_sql_expressions.html
+   Location: .\vulnerable_app.py:102:22
+101	            # VULNERABILITY 3: Unsafe SQL Query Construction (SQL Injection) (CWE-89 / Bandit B608)
+102	            query = f"SELECT * FROM users WHERE username = '{username}' AND password = '{hashed_password}'"
+103	            print(f"[VULNERABLE LOG] Executing Query: {query}")
+
+--------------------------------------------------
+>> Issue: [B324:hashlib] Use of weak MD5 hash for security. Consider usedforsecurity=False
+   Severity: High   Confidence: High
+   CWE: CWE-327 (https://cwe.mitre.org/data/definitions/327.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.4/plugins/b324_hashlib.html
+   Location: .\vulnerable_app.py:135:26
+134	        # Weak MD5 hash
+135	        hashed_password = hashlib.md5(password.encode()).hexdigest()
+136	        
+
+--------------------------------------------------
+>> Issue: [B608:hardcoded_sql_expressions] Possible SQL injection vector through string-based query construction.
+   Severity: Medium   Confidence: Low
+   CWE: CWE-89 (https://cwe.mitre.org/data/definitions/89.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.4/plugins/b608_hardcoded_sql_expressions.html
+   Location: .\vulnerable_app.py:142:22
+141	            # VULNERABILITY 3: Unsafe SQL Query Construction (SQL Injection)
+142	            query = f"INSERT INTO users (username, password, email, role) VALUES ('{username}', '{hashed_password}', '{email}', 'user')"
+143	            print(f"[VULNERABLE LOG] Executing Registration: {query}")
+
+--------------------------------------------------
+>> Issue: [B608:hardcoded_sql_expressions] Possible SQL injection vector through string-based query construction.
+   Severity: Medium   Confidence: Low
+   CWE: CWE-89 (https://cwe.mitre.org/data/definitions/89.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.4/plugins/b608_hardcoded_sql_expressions.html
+   Location: .\vulnerable_app.py:172:18
+171	    if search_query:
+172	        query = f"SELECT * FROM user_notes WHERE username = '{username}' AND (title LIKE '%{search_query}%' OR content LIKE '%{search_query}%')"
+173	    else:
+
+--------------------------------------------------
+>> Issue: [B608:hardcoded_sql_expressions] Possible SQL injection vector through string-based query construction.
+   Severity: Medium   Confidence: Low
+   CWE: CWE-89 (https://cwe.mitre.org/data/definitions/89.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.4/plugins/b608_hardcoded_sql_expressions.html
+   Location: .\vulnerable_app.py:174:18
+173	    else:
+174	        query = f"SELECT * FROM user_notes WHERE username = '{username}'"
+175	        
+
+--------------------------------------------------
+>> Issue: [B608:hardcoded_sql_expressions] Possible SQL injection vector through string-based query construction.
+   Severity: Medium   Confidence: Low
+   CWE: CWE-89 (https://cwe.mitre.org/data/definitions/89.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.4/plugins/b608_hardcoded_sql_expressions.html
+   Location: .\vulnerable_app.py:202:14
+201	    cursor = conn.cursor()
+202	    query = f"INSERT INTO user_notes (username, title, content) VALUES ('{username}', '{title}', '{content}')"
+203	    try:
+
+--------------------------------------------------
+>> Issue: [B201:flask_debug_true] A Flask app appears to be run with debug=True, which exposes the Werkzeug debugger and allows the execution of arbitrary code.
+   Severity: High   Confidence: Medium
+   CWE: CWE-94 (https://cwe.mitre.org/data/definitions/94.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.4/plugins/b201_flask_debug_true.html
+   Location: .\vulnerable_app.py:250:4
+249	    # VULNERABILITY 7: Flask Debug Mode Enabled in Production (CWE-215 / Bandit B201)
+250	    app.run(debug=True, port=5000, host="0.0.0.0")
+
+--------------------------------------------------
+>> Issue: [B104:hardcoded_bind_all_interfaces] Possible binding to all interfaces.
+   Severity: Medium   Confidence: Medium
+   CWE: CWE-605 (https://cwe.mitre.org/data/definitions/605.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.4/plugins/b104_hardcoded_bind_all_interfaces.html
+   Location: .\vulnerable_app.py:250:40
+249	    # VULNERABILITY 7: Flask Debug Mode Enabled in Production (CWE-215 / Bandit B201)
+250	    app.run(debug=True, port=5000, host="0.0.0.0")
+
+--------------------------------------------------
+
+Code scanned:
+	Total lines of code: 410
+	Total lines skipped (#nosec): 0
+	Total potential issues skipped due to specifically being disabled (e.g., #nosec BXXX): 0
+
+Run metrics:
+	Total issues (by severity):
+		Undefined: 0
+		Low: 1
+		Medium: 8
+		High: 5
+	Total issues (by confidence):
+		Undefined: 0
+		Low: 5
+		Medium: 5
+		High: 4
+Files skipped (0):

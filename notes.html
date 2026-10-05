@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block title %}Security Review Notes{% endblock %}
+
+{% block content %}
+<div class="hero-banner">
+  <h1 class="hero-title">
+    <span>📝 Security Review Notes Manager</span>
+  </h1>
+  <p class="hero-subtitle">
+    Document audit observations, manual verification notes, and security remediation sign-offs. Notes are stored locally and displayed safely.
+  </p>
+</div>
+
+<div style="display: grid; grid-template-columns: 1fr 2fr; gap: 1.5rem;">
+  <!-- Left Column: Add Note Form -->
+  <div class="card">
+    <div class="card-title">
+      <span>➕ Add Security Note</span>
+    </div>
+    <form action="{{ url_for('add_secure_note') }}" method="POST">
+      <div class="form-group">
+        <label class="form-label">Note Title:</label>
+        <input type="text" name="title" class="form-control" value="Security Review Notes" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Note Content:</label>
+        <textarea name="content" class="form-control" rows="6" required>Security review performed using static analysis and manual inspection techniques. Findings are potential security issues and should be manually verified before production deployment.</textarea>
+      </div>
+      <button type="submit" class="btn btn-primary" style="width: 100%;">
+        💾 Save Security Note
+      </button>
+    </form>
+  </div>
+
+  <!-- Right Column: Stored Notes List -->
+  <div class="card">
+    <div class="card-title">
+      <span>📂 Saved Security Audit Notes ({{ notes|length }})</span>
+    </div>
+
+    {% if notes %}
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Title</th>
+              <th>Content & Auditor Notes</th>
+              <th>Created At</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for note in notes %}
+              <tr>
+                <td>#{{ note['id'] }}</td>
+                <td><strong>{{ note['title'] }}</strong></td>
+                <td>{{ note['content'] }}</td>
+                <td style="color: var(--text-muted); font-size: 0.85rem;">{{ note['created_at'] }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div style="text-align: center; padding: 2rem; color: var(--text-muted);">
+        No security notes saved yet. Create your first note using the form on the left!
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

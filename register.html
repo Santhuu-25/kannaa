@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register - SecureVault Cybersecurity Audit</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="brand">
+      <div class="brand-icon">🛡️</div>
+      <span>SecureVault</span>
+      <span class="mode-badge {{ app_mode.lower() }}">
+        <span class="pulse-dot"></span>
+        {{ app_mode }} MODE (PORT {{ app_port }})
+      </span>
+    </div>
+    <ul class="nav-links">
+      <li><a href="{{ url_for('login') }}">Login</a></li>
+      <li><a href="{{ url_for('register') }}" class="active">Register</a></li>
+      <li><a href="{{ url_for('audit') }}">Security Audit</a></li>
+      <li><a href="{{ url_for('findings') }}">Findings</a></li>
+      <li><a href="{{ url_for('recommendations') }}">Guidelines</a></li>
+      <li><a href="{{ url_for('about') }}">About</a></li>
+      <li>
+        <a href="http://127.0.0.1:{{ other_port }}" class="mode-switcher-btn">
+          ⚡ Switch to Port {{ other_port }} ({{ other_mode_label }})
+        </a>
+      </li>
+    </ul>
+  </nav>
+
+  <main class="main-container">
+    <div class="flash-container">
+      {% if error %}
+        <div class="flash-msg danger">{{ error }}</div>
+      {% endif %}
+    </div>
+
+    <div style="max-width: 520px; margin: 2rem auto;">
+      <div class="card">
+        <div class="card-title">
+          <span>Create Secure Vault Account</span>
+          <span style="font-size: 0.85rem; color: var(--text-muted);">Mode: {{ app_mode }}</span>
+        </div>
+
+        <form action="{{ url_for('register') }}" method="POST">
+          <div class="form-group">
+            <label class="form-label">Username</label>
+            <input type="text" name="username" class="form-control" placeholder="Choose a username (e.g. bob_sec)" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Email Address</label>
+            <input type="email" name="email" class="form-control" placeholder="user@company.com" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Password</label>
+            <input type="password" name="password" class="form-control" placeholder="At least 8 characters" required>
+          </div>
+
+          <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">
+            Register Account
+          </button>
+        </form>
+
+        <div style="margin-top: 1.5rem; text-align: center; font-size: 0.9rem; color: var(--text-muted);">
+          Already have an account? <a href="{{ url_for('login') }}">Log in here</a>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    CodeAlpha Task 3: Secure Coding Review & Audit | <strong>SecureVault Project</strong>
+  </footer>
+
+  <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

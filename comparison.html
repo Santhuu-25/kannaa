@@ -1,0 +1,180 @@
+{% extends "base.html" %}
+
+{% block title %}Code Comparison & Remediations{% endblock %}
+
+{% block content %}
+<div class="hero-banner">
+  <h1 class="hero-title">
+    <span>⚖️ Vulnerable Code vs Remediated Secure Code</span>
+  </h1>
+  <p class="hero-subtitle">
+    Side-by-side educational comparison of vulnerable security patterns alongside their secure remediated implementations.
+  </p>
+</div>
+
+<div class="comparison-list">
+  <!-- COMPARISON 1: SQL Injection -->
+  <div class="card">
+    <div class="card-title">
+      <div>
+        <span>1. SQL Injection (CWE-89)</span>
+        <span class="severity-pill high" style="margin-left: 0.5rem;">HIGH SEVERITY</span>
+      </div>
+      <span style="font-size: 0.85rem; color: var(--text-muted);">Rule: RULE-SQLI-01</span>
+    </div>
+    <p style="font-size: 0.9rem; color: var(--text-main); margin-bottom: 1rem;">
+      <strong>Why the secure version is safer:</strong> Parameterized queries separate the SQL command structure from user data. Database drivers send parameters out-of-band so malicious inputs (such as <code>' OR '1'='1</code>) are treated strictly as string literals, rendering SQL injection impossible.
+    </p>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem;">
+      <div>
+        <div style="font-size: 0.85rem; font-weight: 700; color: #f87171; margin-bottom: 0.4rem;">❌ Vulnerable Implementation:</div>
+        <div class="code-box vulnerable-snippet">
+<pre># Unsafe string concatenation / f-strings
+query = f"SELECT * FROM users WHERE username = '{username}' AND password = '{password}'"
+cursor.execute(query)</pre>
+        </div>
+      </div>
+      <div>
+        <div style="font-size: 0.85rem; font-weight: 700; color: #34d399; margin-bottom: 0.4rem;">✓ Secure Remediated Implementation:</div>
+        <div class="code-box secure-snippet">
+<pre># Safe Parameterized Query
+query = "SELECT * FROM users WHERE username = ? AND password = ?"
+cursor.execute(query, (username, hashed_pass))</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- COMPARISON 2: Hard-coded Secrets -->
+  <div class="card">
+    <div class="card-title">
+      <div>
+        <span>2. Hard-coded Secrets & API Keys (CWE-798)</span>
+        <span class="severity-pill high" style="margin-left: 0.5rem;">HIGH SEVERITY</span>
+      </div>
+      <span style="font-size: 0.85rem; color: var(--text-muted);">Rule: RULE-SECRET-01</span>
+    </div>
+    <p style="font-size: 0.9rem; color: var(--text-main); margin-bottom: 1rem;">
+      <strong>Why the secure version is safer:</strong> Retrieving secrets dynamically from environment variables or a secret vault prevents credentials from being accidentally committed to public or private version control repositories.
+    </p>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem;">
+      <div>
+        <div style="font-size: 0.85rem; font-weight: 700; color: #f87171; margin-bottom: 0.4rem;">❌ Vulnerable Implementation:</div>
+        <div class="code-box vulnerable-snippet">
+<pre># Plaintext secret committed in code
+app.secret_key = "super_secret_hardcoded_key_12345"
+STRIPE_API_KEY = "your_stripe_secret_key_here"</pre>
+        </div>
+      </div>
+      <div>
+        <div style="font-size: 0.85rem; font-weight: 700; color: #34d399; margin-bottom: 0.4rem;">✓ Secure Remediated Implementation:</div>
+        <div class="code-box secure-snippet">
+<pre>import os, secrets
+app.secret_key = os.environ.get("SECRET_KEY", secrets.token_hex(32))
+STRIPE_API_KEY = os.getenv("STRIPE_API_KEY")</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- COMPARISON 3: Unsafe eval() -->
+  <div class="card">
+    <div class="card-title">
+      <div>
+        <span>3. Unsafe Dynamic Code Execution eval() (CWE-95)</span>
+        <span class="severity-pill" style="background-color: rgba(139, 92, 246, 0.2); color: #a78bfa; border: 1px solid rgba(139, 92, 246, 0.4); margin-left: 0.5rem;">CRITICAL SEVERITY</span>
+      </div>
+      <span style="font-size: 0.85rem; color: var(--text-muted);">Rule: RULE-EVAL-01</span>
+    </div>
+    <p style="font-size: 0.9rem; color: var(--text-main); margin-bottom: 1rem;">
+      <strong>Why the secure version is safer:</strong> <code>ast.literal_eval()</code> safely parses strings containing Python literals (strings, numbers, tuples, lists, dicts, booleans) without executing arbitrary code, preventing Remote Code Execution (RCE).
+    </p>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem;">
+      <div>
+        <div style="font-size: 0.85rem; font-weight: 700; color: #f87171; margin-bottom: 0.4rem;">❌ Vulnerable Implementation:</div>
+        <div class="code-box vulnerable-snippet">
+<pre># Unsafe dynamic code evaluation
+user_input = request.form.get("config")
+data = eval(user_input) # RCE Vulnerability!</pre>
+        </div>
+      </div>
+      <div>
+        <div style="font-size: 0.85rem; font-weight: 700; color: #34d399; margin-bottom: 0.4rem;">✓ Secure Remediated Implementation:</div>
+        <div class="code-box secure-snippet">
+<pre>import ast
+user_input = request.form.get("config")
+data = ast.literal_eval(user_input)</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- COMPARISON 4: Unsafe Subprocess -->
+  <div class="card">
+    <div class="card-title">
+      <div>
+        <span>4. Command Injection via shell=True (CWE-78)</span>
+        <span class="severity-pill high" style="margin-left: 0.5rem;">HIGH SEVERITY</span>
+      </div>
+      <span style="font-size: 0.85rem; color: var(--text-muted);">Rule: RULE-SHELL-01</span>
+    </div>
+    <p style="font-size: 0.9rem; color: var(--text-main); margin-bottom: 1rem;">
+      <strong>Why the secure version is safer:</strong> Setting <code>shell=False</code> and passing commands as argument lists bypasses system shell metacharacter expansion (`;`, `|`, `&&`), preventing command injection attacks.
+    </p>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem;">
+      <div>
+        <div style="font-size: 0.85rem; font-weight: 700; color: #f87171; margin-bottom: 0.4rem;">❌ Vulnerable Implementation:</div>
+        <div class="code-box vulnerable-snippet">
+<pre># Unsafe shell execution
+cmd = "ping -c 1 " + user_target
+subprocess.run(cmd, shell=True)</pre>
+        </div>
+      </div>
+      <div>
+        <div style="font-size: 0.85rem; font-weight: 700; color: #34d399; margin-bottom: 0.4rem;">✓ Secure Remediated Implementation:</div>
+        <div class="code-box secure-snippet">
+<pre># Safe list-based subprocess
+subprocess.run(["ping", "-c", "1", user_target], shell=False, check=True)</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- COMPARISON 5: Weak Hashing -->
+  <div class="card">
+    <div class="card-title">
+      <div>
+        <span>5. Weak Password Hashing MD5/SHA1 (CWE-327)</span>
+        <span class="severity-pill high" style="margin-left: 0.5rem;">HIGH SEVERITY</span>
+      </div>
+      <span style="font-size: 0.85rem; color: var(--text-muted);">Rule: RULE-HASH-01</span>
+    </div>
+    <p style="font-size: 0.9rem; color: var(--text-main); margin-bottom: 1rem;">
+      <strong>Why the secure version is safer:</strong> PBKDF2/SHA-256 and scrypt utilize salted, key-stretching iterations to defeat precomputed rainbow tables and high-speed GPU cracking tools.
+    </p>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem;">
+      <div>
+        <div style="font-size: 0.85rem; font-weight: 700; color: #f87171; margin-bottom: 0.4rem;">❌ Vulnerable Implementation:</div>
+        <div class="code-box vulnerable-snippet">
+<pre>import hashlib
+# MD5 is fast and unsalted
+password_hash = hashlib.md5(password.encode()).hexdigest()</pre>
+        </div>
+      </div>
+      <div>
+        <div style="font-size: 0.85rem; font-weight: 700; color: #34d399; margin-bottom: 0.4rem;">✓ Secure Remediated Implementation:</div>
+        <div class="code-box secure-snippet">
+<pre>from werkzeug.security import generate_password_hash
+# PBKDF2:SHA256 with auto-generated salt
+password_hash = generate_password_hash(password, method='pbkdf2:sha256')</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

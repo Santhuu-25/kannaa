@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}Generate Security Review Report{% endblock %}
+
+{% block content %}
+<div class="hero-banner">
+  <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+    <div>
+      <h1 class="hero-title">
+        <span>📋 Security Audit Report Generator</span>
+      </h1>
+      <p class="hero-subtitle">
+        Generate and download readable security review reports containing metrics, vulnerability details, remediations, and verification advice.
+      </p>
+    </div>
+    <div style="display: flex; gap: 0.5rem;">
+      <a href="{{ url_for('download_report', format='md') }}" class="btn btn-primary">
+        ⬇️ Download Report (.MD)
+      </a>
+      <a href="{{ url_for('download_report', format='json') }}" class="btn btn-secondary">
+        ⬇️ Export Raw JSON
+      </a>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-title">
+    <span>📄 Generated Report Preview</span>
+    <span style="font-size: 0.85rem; color: var(--text-muted);">
+      Analysis Timestamp: {{ report_time or 'Current Session' }}
+    </span>
+  </div>
+
+  <div class="code-box" style="white-space: pre-wrap; font-family: var(--font-mono); font-size: 0.88rem; line-height: 1.6; max-height: 650px; overflow-y: auto;">
+{{ report_markdown }}
+  </div>
+</div>
+{% endblock %}

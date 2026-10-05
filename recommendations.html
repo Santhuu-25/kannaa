@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block title %}Security Guidelines & Remediation Playbook{% endblock %}
+
+{% block content %}
+<div class="hero-banner">
+  <h1 class="hero-title">
+    <span>💡 Secure Coding Guidelines & Remediation Playbook</span>
+  </h1>
+  <p class="hero-subtitle">
+    Actionable defensive engineering practices and verification procedures for Python application security.
+  </p>
+</div>
+
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+  <div class="card">
+    <div class="card-title">
+      <span>🔐 Secrets & Key Management</span>
+    </div>
+    <ul style="line-height: 1.8; color: var(--text-main); font-size: 0.92rem; padding-left: 1.25rem;">
+      <li><strong>Guidance:</strong> Never commit API keys, database credentials, or secret keys into source code repositories.</li>
+      <li><strong>Remediation:</strong> Store credentials in environment variables or dedicated secret management systems (e.g. AWS Secrets Manager, HashiCorp Vault).</li>
+      <li><strong>Verification:</strong> Run static analyzer to confirm no raw secret string literals are assigned to secret variable names.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <div class="card-title">
+      <span>🛡️ SQL Injection Prevention</span>
+    </div>
+    <ul style="line-height: 1.8; color: var(--text-main); font-size: 0.92rem; padding-left: 1.25rem;">
+      <li><strong>Guidance:</strong> Avoid constructing SQL statements using string concatenation (`+`), `%` formatting, or f-strings.</li>
+      <li><strong>Remediation:</strong> Use parameterized queries (`cursor.execute("SELECT * FROM users WHERE id = ?", (user_id,))`) or Object-Relational Mappers (ORMs) like SQLAlchemy.</li>
+      <li><strong>Verification:</strong> Re-run static analyzer and verify all SQL execution calls pass parameters separately from statement templates.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <div class="card-title">
+      <span>⚡ Safe OS & Subprocess Invocation</span>
+    </div>
+    <ul style="line-height: 1.8; color: var(--text-main); font-size: 0.92rem; padding-left: 1.25rem;">
+      <li><strong>Guidance:</strong> Avoid `os.system()` or `subprocess` calls with `shell=True`.</li>
+      <li><strong>Remediation:</strong> Execute commands using `subprocess.run(["cmd", "arg1"], shell=False)` with argument lists to prevent shell metacharacter injection.</li>
+      <li><strong>Verification:</strong> Confirm command arguments are passed as explicit string lists and `shell=True` is removed.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <div class="card-title">
+      <span>🔑 Secure Password Hashing</span>
+    </div>
+    <ul style="line-height: 1.8; color: var(--text-main); font-size: 0.92rem; padding-left: 1.25rem;">
+      <li><strong>Guidance:</strong> Never use fast hash functions like MD5, SHA-1, or plain SHA-256 for storing user passwords.</li>
+      <li><strong>Remediation:</strong> Use key-stretching salted hash algorithms such as PBKDF2:SHA256, bcrypt, Argon2, or scrypt (`werkzeug.security.generate_password_hash`).</li>
+      <li><strong>Verification:</strong> Verify database user password fields store slow hashes with unique salt prefixes.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <div class="card-title">
+      <span>🎲 Cryptographic Randomness</span>
+    </div>
+    <ul style="line-height: 1.8; color: var(--text-main); font-size: 0.92rem; padding-left: 1.25rem;">
+      <li><strong>Guidance:</strong> Do not use standard pseudo-random number generators (`random` module) for security-sensitive tokens.</li>
+      <li><strong>Remediation:</strong> Use the Python `secrets` module (`secrets.token_hex(32)`) for session tokens, CSRF tokens, and password reset keys.</li>
+      <li><strong>Verification:</strong> Audit all token generation functions to ensure `secrets` or `os.urandom` is used.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <div class="card-title">
+      <span>📁 Safe File & Path Handling</span>
+    </div>
+    <ul style="line-height: 1.8; color: var(--text-main); font-size: 0.92rem; padding-left: 1.25rem;">
+      <li><strong>Guidance:</strong> Prevent Path Traversal (CWE-22) when reading or writing user-specified files.</li>
+      <li><strong>Remediation:</strong> Strip path components using `os.path.basename(filename)` and verify canonical paths using `os.path.abspath()` within an allowed directory.</li>
+      <li><strong>Verification:</strong> Test file paths with directory traversal payloads (`../../etc/passwd`) and verify access is rejected.</li>
+    </ul>
+  </div>
+</div>
+{% endblock %}

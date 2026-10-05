@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block title %}About & Audit Methodology{% endblock %}
+
+{% block content %}
+<div class="hero-banner">
+  <h1 class="hero-title">
+    <span>ℹ️ About & Security Audit Methodology</span>
+  </h1>
+  <p class="hero-subtitle">
+    Technical overview of the CodeAlpha Task 3 Secure Coding Review & Vulnerability Analysis Tool.
+  </p>
+</div>
+
+<div class="card">
+  <div class="card-title">
+    <span>🎯 Project Purpose & Scope</span>
+  </div>
+  <p style="color: var(--text-main); margin-bottom: 1rem;">
+    This application is built for <strong>CodeAlpha Cybersecurity Internship Task 3 — Secure Coding Review</strong>. It provides software developers and security auditors with an interactive Python-based static security analyzer (SAST) to review source code for common security weaknesses.
+  </p>
+</div>
+
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+  <div class="card">
+    <div class="card-title">
+      <span>🛠️ Static Analysis Engine Architecture</span>
+    </div>
+    <ol style="color: var(--text-main); line-height: 1.8; padding-left: 1.25rem; font-size: 0.92rem;">
+      <li><strong>Abstract Syntax Tree (AST) Parsing:</strong> Converts Python code into syntax tree nodes using standard `ast` module.</li>
+      <li><strong>Rule-Based AST Visitors:</strong> Analyzes function calls, assignments, and exception handlers for security anti-patterns.</li>
+      <li><strong>Bandit Integration:</strong> Executes Bandit AST security scanner natively when available.</li>
+      <li><strong>No Execution Sandbox:</strong> Code is strictly parsed out-of-band without invocation.</li>
+    </ol>
+  </div>
+
+  <div class="card">
+    <div class="card-title">
+      <span>🔍 Covered Security Vulnerabilities</span>
+    </div>
+    <ul style="color: var(--text-main); line-height: 1.8; padding-left: 1.25rem; font-size: 0.92rem;">
+      <li><strong>CWE-798:</strong> Hard-coded Secrets & API Keys</li>
+      <li><strong>CWE-95:</strong> Unsafe eval() & Dynamic Code Execution</li>
+      <li><strong>CWE-78:</strong> Unsafe Subprocess & Command Injection (`shell=True`)</li>
+      <li><strong>CWE-89:</strong> SQL Injection String Construction</li>
+      <li><strong>CWE-215:</strong> Flask Debug Mode Enabled</li>
+      <li><strong>CWE-327:</strong> Weak Hashing (MD5 / SHA-1)</li>
+      <li><strong>CWE-330:</strong> Insecure Pseudo-Randomness</li>
+      <li><strong>CWE-22:</strong> Path Traversal & Unsafe File Open</li>
+      <li><strong>CWE-396:</strong> Broad Exception Handling</li>
+    </ul>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-title">
+    <span>⚠️ Security Limitations & Ethical Use Statement</span>
+  </div>
+  <p style="color: var(--text-main); line-height: 1.6; margin-bottom: 0.75rem;">
+    <strong>Static Analysis Limitations:</strong> Static code analysis identifies potential security weaknesses by inspecting code structure and patterns. Findings are labeled as <em>"Potential vulnerability / security issue detected by static analysis"</em> and should be manually verified before production deployment.
+  </p>
+  <p style="color: var(--text-muted); font-size: 0.9rem;">
+    <strong>Ethical & Educational Use:</strong> This application is intended strictly for defensive security education, developer secure-coding guidance, and security auditing coursework.
+  </p>
+</div>
+{% endblock %}

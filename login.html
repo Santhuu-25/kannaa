@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - SecureVault Cybersecurity Audit</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="brand">
+      <div class="brand-icon">🛡️</div>
+      <span>SecureVault</span>
+      <span class="mode-badge {{ app_mode.lower() }}">
+        <span class="pulse-dot"></span>
+        {{ app_mode }} MODE (PORT {{ app_port }})
+      </span>
+    </div>
+    <ul class="nav-links">
+      <li><a href="{{ url_for('login') }}" class="active">Login</a></li>
+      <li><a href="{{ url_for('register') }}">Register</a></li>
+      <li><a href="{{ url_for('audit') }}">Security Audit</a></li>
+      <li><a href="{{ url_for('findings') }}">Findings</a></li>
+      <li><a href="{{ url_for('recommendations') }}">Guidelines</a></li>
+      <li><a href="{{ url_for('about') }}">About</a></li>
+      <li>
+        <a href="http://127.0.0.1:{{ other_port }}" class="mode-switcher-btn">
+          ⚡ Switch to Port {{ other_port }} ({{ other_mode_label }})
+        </a>
+      </li>
+    </ul>
+  </nav>
+
+  <main class="main-container">
+    <div class="flash-container">
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, message in messages %}
+            <div class="flash-msg {{ category }}">{{ message }}</div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+
+      {% if error %}
+        <div class="flash-msg danger">{{ error }}</div>
+      {% endif %}
+    </div>
+
+    <div style="max-width: 480px; margin: 3rem auto;">
+      <div class="card">
+        <div class="card-title">
+          <span>Account Authentication</span>
+          <span style="font-size: 0.85rem; color: var(--text-muted);">Port {{ app_port }}</span>
+        </div>
+
+        <form action="{{ url_for('login') }}" method="POST">
+          <div class="form-group">
+            <label class="form-label">Username</label>
+            <input type="text" name="username" class="form-control" placeholder="Enter your username" required autofocus>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Password</label>
+            <input type="password" name="password" class="form-control" placeholder="Enter your password" required>
+          </div>
+
+          <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">
+            Authenticate & Access Vault
+          </button>
+        </form>
+
+        <div style="margin-top: 1.5rem; text-align: center; font-size: 0.9rem; color: var(--text-muted);">
+          Don't have an account? <a href="{{ url_for('register') }}">Register here</a>
+        </div>
+      </div>
+
+      <div class="card" style="background-color: rgba(30, 41, 59, 0.5); border-style: dashed;">
+        <h4 style="color: var(--text-bright); margin-bottom: 0.5rem; font-size: 0.95rem;">💡 Demo Credentials:</h4>
+        <ul style="color: var(--text-muted); font-size: 0.88rem; padding-left: 1.25rem;">
+          <li><strong>Admin:</strong> Username: <code>admin</code> | Password: <code>admin123</code></li>
+          <li><strong>User:</strong> Username: <code>alice</code> | Password: <code>password123</code></li>
+        </ul>
+        {% if app_mode == 'VULNERABLE' %}
+          <div style="margin-top: 0.75rem; font-size: 0.82rem; color: #f87171;">
+            ⚠️ <em>Vulnerable Mode SQLi Bypass Demo:</em> Try <code>' OR '1'='1</code> in username field with any password!
+          </div>
+        {% else %}
+          <div style="margin-top: 0.75rem; font-size: 0.82rem; color: #34d399;">
+            🛡️ <em>Secure Mode Protection:</em> SQL Injection attempts are safely parameterized and rejected!
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    CodeAlpha Task 3: Secure Coding Review & Audit | <strong>SecureVault Project</strong>
+  </footer>
+
+  <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

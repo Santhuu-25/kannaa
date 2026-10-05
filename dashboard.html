@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+
+{% block title %}Security Audit Dashboard{% endblock %}
+
+{% block content %}
+<div class="hero-banner">
+  <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+    <div>
+      <h1 class="hero-title">
+        <span>🛡️ Application Security Audit Dashboard</span>
+        <span class="severity-pill low">TASK 3 READY</span>
+      </h1>
+      <p class="hero-subtitle">
+        Overview of Python static security review results, vulnerability breakdown, audit history, and security notes.
+      </p>
+    </div>
+    <div style="display: flex; gap: 0.5rem;">
+      <a href="{{ url_for('code_review') }}" class="btn btn-primary">
+        🚀 Launch Code Scanner
+      </a>
+      <a href="{{ url_for('findings') }}" class="btn btn-secondary">
+        🐛 View Findings
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- Overview Metrics Grid -->
+<div class="metrics-grid">
+  <div class="metric-card low">
+    <div class="metric-value">{{ metrics.total_findings or 0 }}</div>
+    <div class="metric-label">TOTAL ISSUES DETECTED</div>
+  </div>
+  <div class="metric-card" style="border-left: 4px solid #8b5cf6;">
+    <div class="metric-value" style="color: #a78bfa;">{{ metrics.critical_count or 0 }}</div>
+    <div class="metric-label">CRITICAL SEVERITY</div>
+  </div>
+  <div class="metric-card high">
+    <div class="metric-value" style="color: #f87171;">{{ metrics.high_count or 0 }}</div>
+    <div class="metric-label">HIGH SEVERITY</div>
+  </div>
+  <div class="metric-card medium">
+    <div class="metric-value" style="color: #fbbf24;">{{ metrics.medium_count or 0 }}</div>
+    <div class="metric-label">MEDIUM SEVERITY</div>
+  </div>
+  <div class="metric-card success">
+    <div class="metric-value" style="color: #34d399;">{{ metrics.lines_analyzed or 0 }}</div>
+    <div class="metric-label">LINES ANALYZED</div>
+  </div>
+</div>
+
+<div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem;">
+  <!-- Left Main Column: Recent Scan Findings -->
+  <div class="card">
+    <div class="card-title">
+      <span>📋 Current Scan Findings Summary</span>
+      <a href="{{ url_for('findings') }}" style="font-size: 0.85rem;">View Full Catalog →</a>
+    </div>
+
+    {% if not findings %}
+      <div style="text-align: center; padding: 2rem; color: var(--text-muted);">
+        No active scan findings loaded. Click <strong>Launch Code Scanner</strong> above to analyze Python source code.
+      </div>
+    {% else %}
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Category</th>
+              <th>Severity</th>
+              <th>Line</th>
+              <th>Code Snippet</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for f in findings[:6] %}
+              <tr>
+                <td><strong>{{ f.finding_id }}</strong></td>
+                <td>{{ f.category }}</td>
+                <td><span class="severity-pill {{ f.severity.lower() }}">{{ f.severity }}</span></td>
+                <td>Line {{ f.line_number }}</td>
+                <td><code style="font-size: 0.82rem;">{{ f.code_snippet[:45] }}{% if f.code_snippet|length > 45 %}...{% endif %}</code></td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- Right Column: Quick Sample Launcher & Note -->
+  <div>
+    <div class="card">
+      <div class="card-title">
+        <span>⚡ Quick Sample Scan</span>
+      </div>
+      <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 1rem;">
+        Test the scanner instantly using pre-loaded educational code samples:
+      </p>
+      <form action="{{ url_for('analyze') }}" method="POST">
+        <input type="hidden" name="sample_key" value="vulnerable_1">
+        <button type="submit" class="btn btn-secondary" style="width: 100%; margin-bottom: 0.5rem; justify-content: flex-start;">
+          ⚠️ Scan Vulnerable Sample
+        </button>
+      </form>
+      <form action="{{ url_for('analyze') }}" method="POST">
+        <input type="hidden" name="sample_key" value="secure_1">
+        <button type="submit" class="btn btn-secondary" style="width: 100%; justify-content: flex-start;">
+          ✓ Scan Remediated Secure Sample
+        </button>
+      </form>
+    </div>
+
+    <div class="card">
+      <div class="card-title">
+        <span>📝 Security Review Note</span>
+      </div>
+      <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.75rem;">
+        Default Audit Statement:
+      </p>
+      <div style="background: var(--bg-card-hover); padding: 0.75rem; border-radius: 6px; font-size: 0.82rem; border: 1px solid var(--border-color); color: var(--text-main);">
+        "Security review performed using static analysis and manual inspection techniques. Findings are potential security issues and should be manually verified before production deployment."
+      </div>
+      <a href="{{ url_for('notes') }}" class="btn btn-secondary btn-sm" style="margin-top: 0.75rem; width: 100%;">
+        Manage Security Notes
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %}
